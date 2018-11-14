@@ -276,7 +276,10 @@ def predictText(text):
     rp = ResultProcessing()
     predictions = pd.DataFrame(clf.predict(pd.Series([text])), columns=mlb.classes_)
     print(predictions)
-    custom_threshold(predictions, threshold)
+    trp = predictions.transpose()
+    trp.sort_values(by=[0], inplace = True, ascending=False)
+    predictions = trp.transpose()
+    predictions = custom_threshold(predictions, threshold)
     rake.extract_keywords(text)
     extracted = rake.get_keywords(3)
     return rp.idx_to_cat(predictions.iloc[0]), extracted
