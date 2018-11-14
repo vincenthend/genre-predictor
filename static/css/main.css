@@ -1,0 +1,20 @@
+.title {
+    color: #2a2a2a;
+}
+
+.beauty-background {
+    background-image: url(../img/top.svg), url(../img/bottom.svg) !important;
+    background-repeat: no-repeat !important;
+    background-position: 0 top, 0 bottom !important;
+    background-size: 100% !important;
+    /* background-position-y: -10%, +10%;  */
+}
+
+.word-box {
+    border-radius: 5px;
+    border: 1px solid #ffa538;
+    margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 4px 4px 4px 4px;
+}

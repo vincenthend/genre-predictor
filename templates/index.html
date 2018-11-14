@@ -1,0 +1,123 @@
+<html>
+    <head>
+        <title>
+            VMR Movie Genre Predictor
+        </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div id="app">
+            <v-app light class="beauty-background">
+                <v-content>
+                    <v-container>
+                        <v-flex class="container" style="margin-top: 45px; margin-bottom: 55px;">
+                            <v-layout row wrap>
+                                <h1>VMR Movie Genre Predictor</h1>
+                            </v-layout>
+                            <v-layout row wrap>
+                                <p>Predict movie based on movie description or review</p>
+                            </v-layout>
+                            <v-layout row wrap>
+                                <v-flex>
+                                    <v-textarea solo 
+                                        v-model="movieDescription"
+                                        label="Insert movie description here..."
+                                        height="200px"
+                                        rows="10">
+                                    </v-textarea>
+                                </v-flex>
+                            </v-layout>
+                            <v-layout row wrap>
+                                <v-flex class="text-xs-right">
+                                    <v-btn v-on:click="reset()">Reset</v-btn>
+                                    <v-btn color="#ffa538" style="color:white" v-on:click="submitMovieDescription()">Predict</v-btn>
+                                </v-flex>
+                            </v-layout>
+                            <v-flex v-if="predictPressed">
+                                <v-layout>
+                                    <h2>Predicting ...</h2>
+                                </v-layout>
+                            </v-flex>
+                            <v-flex v-else-if="error">
+                                <v-layout>
+                                    <h3>An unexpected problem has occured. Please try again in a few more minutes.</h3>
+                                </v-layout>
+                            </v-flex>
+                            <v-flex v-else-if="donePredict">
+                                <v-layout>
+                                    <h2>Result</h2>
+                                </v-layout>
+                                <v-layout row wrap>
+                                    <h4>Genre</h4>
+                                </v-layout>
+                                <v-layout row wrap>
+                                    <v-flex class="word-box text-xs-center" v-for="item in genres"><% item %></v-flex>
+                                </v-layout>
+                                <v-layout row wrap style="margin-top: 10px;">
+                                    <h4>Keywords{#keywords[0]#}</h4>
+                                </v-layout>
+                                <v-layout row wrap>
+                                    <v-flex class="word-box text-xs-center" v-for="item in keywords"><% item %></v-flex>
+                                </v-layout>
+                            </v-flex>
+                        </v-flex>
+                    </v-container>
+                </v-content>
+            </v-app>
+        </div>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+        <script>
+            new Vue({
+                delimiters: ['<%', '%>'],
+                el: '#app',
+                data: {
+                    movieDescription: '',
+                    predictPressed: false,
+                    donePredict: false,
+                    error: false,
+                    genres: [],
+                    keywords: [],
+                },
+                methods: {
+                    submitMovieDescription() {
+                        this.predictPressed = true;
+                        // CHANGE THIS WITH REQUEST URL
+                        requestURL = '/predict';
+                        axios.post(requestURL, {
+                            movie_description: this.movieDescription,
+                        })
+                        .then(response => {
+                            return response.data;
+                        })
+                        .then(data => {
+                            this.predictPressed = false;
+                            this.error = false;
+                            this.donePredict = true;
+                            this.genres = data.genres;
+                            this.keywords = data.keywords;
+                            console.log(this.keywords);
+                        })
+                        .catch(error => {
+                            this.predictPressed = false;
+                            this.donePredict = false;
+                            this.error = true;
+                            console.log(error.response)
+                        });
+                    },
+                    reset() {
+                        this.donePredict = false;
+                        this.predictPressed = false;
+                        this.error = false;
+                        this.movieDescription = '';
+                        this.genres = [];
+                        this.keywords = [];
+                    },
+                }
+            })
+        </script>
+    </body>
+</html>
